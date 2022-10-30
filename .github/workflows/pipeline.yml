@@ -1,0 +1,21 @@
+name: Deployment process
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Decrypt GPG file
+        env:
+        SUPER_SECRET: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          gpg --quiet --batch --yes --decrypt --passphrase="$SUPER_SECRET" --output ./service-account.json account.service.json.gpg
+      - name: Read decrypted file
+        run: cat service-account.json
