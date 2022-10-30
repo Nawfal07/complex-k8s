@@ -15,6 +15,6 @@ jobs:
         env:
           SUPER_SECRET: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" --output ./service-account.json account.service.json.gpg
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" --output ./service-account.json account-service.json.gpg
       - name: Read decrypted file
         run: cat service-account.json
