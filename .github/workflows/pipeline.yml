@@ -6,9 +6,8 @@ on:
       - master
 
 jobs:
-  build:
+  before_install:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Decrypt GPG file
@@ -16,5 +15,8 @@ jobs:
           SUPER_SECRET: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" --output ./service-account.json account-service.json.gpg
+  build:
+    runs-on: ubuntu-latest
+    steps:
       - name: Read decrypted file
         run: cat service-account.json
