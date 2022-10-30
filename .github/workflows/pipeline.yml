@@ -17,6 +17,7 @@ jobs:
           gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" --output ./service-account.json account-service.json.gpg
   build:
     runs-on: ubuntu-latest
+    needs: before_install
     steps:
       - name: Read decrypted file
         run: cat service-account.json
