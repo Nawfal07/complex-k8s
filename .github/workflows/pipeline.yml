@@ -11,11 +11,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Decrypt GPG file
         env:
-        SUPER_SECRET: ${{ secrets.GPG_PASSPHRASE }}
+          SUPER_SECRET: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="$SUPER_SECRET" --output ./service-account.json account.service.json.gpg
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" --output ./service-account.json account.service.json.gpg
       - name: Read decrypted file
         run: cat service-account.json
