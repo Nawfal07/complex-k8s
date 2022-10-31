@@ -51,3 +51,7 @@ jobs:
       - name: Launch test
         run: |-
           docker run -e CI=true nawfal07/react-test npm test
+
+      - name: Deploy
+        run: |-
+          bash ./test.sh
