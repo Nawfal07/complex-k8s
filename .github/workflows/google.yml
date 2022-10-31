@@ -11,6 +11,11 @@ env:
   GKE_ZONE: us-central1-c # Add your cluster zone here.
 
 jobs:
+  testing-client-server:
+    name: Launch tests
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/test.yml
+
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
@@ -40,8 +45,8 @@ jobs:
           location: ${{ env.GKE_ZONE }}
           credentials: ${{ secrets.GKE_SA_KEY }}
 
-      - name: Launch tests
-        uses: ./.github/workflows/test.yml
+      # - name: Launch tests
+      #   uses: ./.github/workflows/test.yml
 
       - name: Deploy
         run: |-
