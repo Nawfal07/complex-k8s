@@ -17,6 +17,7 @@ jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
+    needs: TestingClientAndServer
     # environment: production
 
     steps:
