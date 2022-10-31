@@ -1,0 +1,33 @@
+name: Run tests
+
+on:
+  workflow_call:
+  push:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Build the Docker image
+      - name: Build Client test image
+        run: |-
+          docker build -t  nawfal07/client-test -f ./client/Dockerfile.dev ./client
+
+      - name: Build Servr test image
+        run: |-
+          docker build -t  nawfal07/server-test -f ./server/Dockerfile.dev ./server
+
+      - name: Launch Client test
+        run: |-
+          docker run -e CI=true nawfal07/client-test npm test
+
+      - name: Launch Server test
+        run: |-
+          docker run -e CI=true nawfal07/server-test npm test
