@@ -1,23 +1,51 @@
-name: Deployment process
+name: Build and Deploy to GKE
 
 on:
   push:
     branches:
-      - master
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: multi-cluster # Add your cluster name here.
+  GKE_ZONE: us-central1-c # Add your cluster zone here.
 
 jobs:
-  before_install:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
+    # environment: production
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Decrypt GPG file
-        env:
-          SUPER_SECRET: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+        with:
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
+
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      # - run: |-
+      #     gcloud --quiet auth configure-docker
+      - name: Login to Docker
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" --output ./service-account.json account-service.json.gpg
-  build:
-    runs-on: ubuntu-latest
-    needs: before_install
-    steps:
-      - name: Read decrypted file
-        run: cat service-account.json
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }}
+
+      # Get the GKE credentials so we can deploy to the cluster
+      - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          credentials: ${{ secrets.GKE_SA_KEY }}
+
+      - name: Build Client test image
+        run: |-
+          docker build -t  nawfal07/react-test -f ./client/Dockerfile.dev ./client
+
+      # Build the Docker image
+      - name: Launch test
+        run: |-
+          docker run -e CI=true nawfal07/react-test npm test
