@@ -11,10 +11,8 @@ env:
   GKE_ZONE: us-central1-c # Add your cluster zone here.
 
 jobs:
-  testing-client-server:
-    name: Launch tests
-    runs-on: ubuntu-latest
-    uses: ./.github/workflows/test.yml
+  TestingClientAndServer:
+    uses: /.github/workflows/test.yml
 
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
