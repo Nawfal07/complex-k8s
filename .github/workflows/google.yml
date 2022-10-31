@@ -54,4 +54,5 @@ jobs:
 
       - name: Deploy
         run: |-
+          export SHA=$GITHUB_SHA
           bash ./deploy.sh
